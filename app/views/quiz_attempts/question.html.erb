@@ -25,6 +25,17 @@
       </div>
       
       <div class="p-8">
+        <% if flash[:alert] %>
+          <div class="bg-red-50 border-l-4 border-red-400 text-red-700 px-4 py-3 rounded mb-6 animate-fade-in" role="alert">
+            <div class="flex items-center">
+              <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              </svg>
+              <span class="font-medium"><%= flash[:alert] %></span>
+            </div>
+          </div>
+        <% end %>
+        
         <h2 class="text-2xl font-bold text-gray-900 mb-8"><%= @question.content %></h2>
         
         <%= form_with url: answer_quiz_attempt_path(@attempt), method: :post, data: { controller: "quiz-form" } do |form| %>
@@ -55,10 +66,13 @@
             <% elsif @question.question_type == 'matching' %>
               <!-- Matching Options -->
               <div class="grid grid-cols-2 gap-6" data-controller="matching">
+                <% shuffled_options = @question.options.shuffle %>
+                <% shuffled_match_keys = @question.options.map(&:match_key).shuffle %>
+                
                 <div>
                   <h3 class="text-sm font-semibold text-gray-700 mb-4">Items</h3>
                   <div class="space-y-3">
-                    <% @question.options.shuffle.each do |option| %>
+                    <% shuffled_options.each do |option| %>
                       <div class="p-4 bg-gray-50 border border-gray-200 rounded-lg font-medium text-gray-900">
                         <%= option.content %>
                       </div>
@@ -69,10 +83,10 @@
                 <div>
                   <h3 class="text-sm font-semibold text-gray-700 mb-4">Matches (Select for each item)</h3>
                   <div class="space-y-3">
-                    <% @question.options.shuffle.each_with_index do |option, index| %>
+                    <% shuffled_options.each_with_index do |option, index| %>
                       <div>
                         <%= select_tag "matches[#{index}][match_key]", 
-                            options_for_select(@question.options.map { |o| [o.match_key, o.match_key] }),
+                            options_for_select(shuffled_match_keys.map { |mk| [mk, mk] }),
                             class: "block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" %>
                         <%= hidden_field_tag "matches[#{index}][option_id]", option.id %>
                       </div>

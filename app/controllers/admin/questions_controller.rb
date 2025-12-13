@@ -1,7 +1,7 @@
 class Admin::QuestionsController < ApplicationController
   before_action :require_login
-  before_action :set_quiz
   before_action :set_question, only: [ :edit, :update, :destroy ]
+  before_action :set_quiz
 
   def new
     @question = @quiz.questions.build
@@ -37,12 +37,23 @@ class Admin::QuestionsController < ApplicationController
 
   private
 
-  def set_quiz
-    @quiz = current_user.quizzes.find(params[:quiz_id])
+  def set_question
+    # For shallow routes (edit, update, destroy), find question first
+    @question = Question.find(params[:id])
+    # Ensure the question belongs to a quiz owned by current user
+    unless @question.quiz.user_id == current_user.id
+      redirect_to admin_root_path, alert: "Access denied"
+    end
   end
 
-  def set_question
-    @question = @quiz.questions.find(params[:id])
+  def set_quiz
+    # For nested routes (new, create), get quiz from params
+    # For shallow routes (edit, update, destroy), get quiz from question
+    if params[:quiz_id]
+      @quiz = current_user.quizzes.find(params[:quiz_id])
+    elsif @question
+      @quiz = @question.quiz
+    end
   end
 
   def question_params

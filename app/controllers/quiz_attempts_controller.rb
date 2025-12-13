@@ -13,27 +13,65 @@ class QuizAttemptsController < ApplicationController
 
   def answer
     @question = Question.find(params[:question_id])
+    @current_question_index = params[:current_index].to_i
+    @questions = @attempt.quiz.questions.includes(:options)
+
+    # Validate that an answer was provided
+    answer_provided = false
 
     # Handle different question types
     case @question.question_type
     when "multiple_choice"
       option_ids = params[:option_ids].is_a?(Array) ? params[:option_ids] : [ params[:option_id] ]
-      option_ids.compact.each do |option_id|
+      option_ids = option_ids.compact.reject(&:blank?)
+
+      if option_ids.empty?
+        flash.now[:alert] = "Please select at least one answer before proceeding."
+        render :question, status: :unprocessable_entity
+        return
+      end
+
+      option_ids.each do |option_id|
         @attempt.attempt_answers.create!(
           question: @question,
           option_id: option_id
         )
       end
+      answer_provided = true
+
     when "true_false"
+      if params[:option_id].blank?
+        flash.now[:alert] = "Please select an answer before proceeding."
+        render :question, status: :unprocessable_entity
+        return
+      end
+
       @attempt.attempt_answers.create!(
         question: @question,
         option_id: params[:option_id]
       )
+      answer_provided = true
+
     when "matching"
+      if params[:matches].blank?
+        flash.now[:alert] = "Please complete all matches before proceeding."
+        render :question, status: :unprocessable_entity
+        return
+      end
+
+      # Convert matches hash to array of properly formatted hashes
+      matches_array = params[:matches].values.map do |match|
+        {
+          "option_id" => match[:option_id].to_i,
+          "match_key" => match[:match_key]
+        }
+      end
+
       @attempt.attempt_answers.create!(
         question: @question,
-        answer_text: params[:matches].to_json
+        answer_text: matches_array.to_json
       )
+      answer_provided = true
     end
 
     next_index = params[:current_index].to_i + 1
