@@ -1,7 +1,7 @@
 <div class="min-h-screen bg-gray-50">
   <!-- Header -->
   <div class="bg-white shadow">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <div class="flex justify-between items-center">
         <div>
           <h1 class="text-3xl font-bold text-gray-900">Quiz Management</h1>
@@ -16,7 +16,7 @@
   </div>
 
   <!-- Main Content -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <% if flash[:notice] %>
       <div class="bg-green-50 border border-green-400 text-green-700 px-4 py-3 rounded mb-6 transition-all duration-500" role="alert">
         <%= flash[:notice] %>
@@ -34,7 +34,7 @@
     </div>
 
     <% if @quizzes.any? %>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         <% @quizzes.each do |quiz| %>
           <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
             <div class="p-6">

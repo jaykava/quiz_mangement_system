@@ -65,3 +65,58 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Responsive container improvements */
+@media (min-width: 640px) {
+  .container {
+    max-width: 640px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1200px;
+  }
+}
+
+/* Better form control sizing */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+select,
+textarea {
+  @apply transition-all duration-200;
+}
+
+/* Better button hover states */
+button:not(:disabled),
+input[type="submit"]:not(:disabled) {
+  @apply transition-all duration-200;
+}
+
+button:disabled,
+input[type="submit"]:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+/* Improved card shadows */
+.shadow-card {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-card-hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
