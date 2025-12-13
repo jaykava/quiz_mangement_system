@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  quiz: one
+  session_id: MyString
+  score: 9.99
+  total_questions: 1
+
+two:
+  quiz: two
+  session_id: MyString
+  score: 9.99
+  total_questions: 1

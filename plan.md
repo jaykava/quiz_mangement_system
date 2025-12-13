@@ -50,6 +50,7 @@ Build a fast, clean, quiz platform where:
   - content
   - question_type
   - position
+  - points
 
 - Option
   - quesiton_id
@@ -85,4 +86,60 @@ Build a fast, clean, quiz platform where:
   - public access no login required
   - track user via session_id
 
-7. 
+7. quiz flow (public)
+  - quiz start
+  - quizattempt ccreted
+  - questions show one by one
+  - turbo transitions beetwen questions
+  - progress bar updates dyammically
+  - anser stored per question
+  - quiz completed
+  - score calclated
+  - display results page
+
+8. Scoring Logic
+  - each quesion has points
+  - correct answers add points
+  - scores saved in quiz_attempts
+  - correct anser displayed after completion
+
+9. UI / UX 
+  - Quiz UI one quesion per screen
+  - smooth transitions
+  - disable back navigation
+  - sticky progress bar
+  - results pagetotalscore
+  - correct/incoreect breakdown
+  - highlight correct answers
+
+10 Admin UI
+  - Dashnboard with quizzes list
+  - Quiz editor
+  - Dynamic Question builder
+  - Option add/remove
+  - Publish toggle
+
+11 Stimulus controller
+  - quiz_controller.js
+  - progress_controller.js
+  - matching_controller.js
+
+12 Validtion Rules
+  - Quiz must have 1 question
+  - question must have valid options
+  - matching questions require match_key
+  - Admin-only create quiz
+  - deletion of the quiz have dependent destroy
+
+13 Milestones
+  1. project setup and all dependency css and all
+  2. Database models
+  3. Admin authentication
+  4. Quiz CRUD
+  5. Quesion Builder
+  6. public quiz flow
+  7. scorinf & results
+  8. UI polish
+  9. testing
+
+

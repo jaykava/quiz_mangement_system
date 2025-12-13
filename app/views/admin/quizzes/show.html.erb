@@ -1,0 +1,121 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-md p-8 mb-6">
+      <div class="flex justify-between items-start mb-4">
+        <div class="flex-1">
+          <h1 class="text-3xl font-bold text-gray-900"><%= @quiz.title %></h1>
+          <p class="mt-2 text-gray-600"><%= @quiz.description %></p>
+          <div class="mt-4 flex items-center gap-4">
+            <% if @quiz.published? %>
+              <span class="px-3 py-1 text-sm font-semibold text-green-800 bg-green-100 rounded-full">Published</span>
+            <% else %>
+              <span class="px-3 py-1 text-sm font-semibold text-gray-800 bg-gray-100 rounded-full">Draft</span>
+            <% end %>
+            <span class="text-sm text-gray-500"><%= @quiz.questions.count %> Questions</span>
+            <span class="text-sm text-gray-500"><%= @quiz.total_points %> Total Points</span>
+          </div>
+        </div>
+        
+        <div class="flex gap-2">
+          <%= link_to "Back", admin_quizzes_path, class: "px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200" %>
+          <%= link_to "Edit Quiz", edit_admin_quiz_path(@quiz), class: "px-4 py-2 border border-indigo-600 rounded-md text-sm font-medium text-indigo-600 bg-white hover:bg-indigo-50 transition-colors duration-200" %>
+          <%= button_to toggle_publish_admin_quiz_path(@quiz), method: :patch, class: "px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white #{@quiz.published? ? 'bg-gray-600 hover:bg-gray-700' : 'bg-green-600 hover:bg-green-700'} transition-colors duration-200" do %>
+            <%= @quiz.published? ? "Unpublish" : "Publish" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Questions Section -->
+    <div class="bg-white rounded-lg shadow-md p-8">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-semibold text-gray-900">Questions</h2>
+        <%= link_to new_admin_quiz_question_path(@quiz), class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200" do %>
+          <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Add Question
+        <% end %>
+      </div>
+
+      <% if @questions.any? %>
+        <div class="space-y-4">
+          <% @questions.each_with_index do |question, index| %>
+            <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow duration-200">
+              <div class="flex justify-between items-start mb-3">
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 mb-2">
+                    <span class="flex items-center justify-center w-8 h-8 bg-indigo-100 text-indigo-600 rounded-full font-semibold"><%= index + 1 %></span>
+                    <span class="px-2 py-1 text-xs font-semibold text-blue-800 bg-blue-100 rounded">
+                      <%= question.question_type.titleize %>
+                    </span>
+                    <span class="text-sm text-gray-500"><%= question.points %> pts</span>
+                  </div>
+                  <p class="text-gray-900 font-medium ml-11"><%= question.content %></p>
+                </div>
+                <div class="flex gap-2">
+                  <%= link_to "Edit", edit_admin_question_path(question), class: "text-indigo-600 hover:text-indigo-800 text-sm font-medium" %>
+                  <%= button_to "Delete", admin_question_path(question), method: :delete, data: { confirm: "Are you sure?" }, class: "text-red-600 hover:text-red-800 text-sm font-medium" %>
+                </div>
+              </div>
+              
+              <div class="ml-11 mt-4">
+                <% if question.question_type == 'matching' %>
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <h4 class="text-sm font-medium text-gray-700 mb-2">Items:</h4>
+                      <ul class="space-y-1">
+                        <% question.options.each do |option| %>
+                          <li class="text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded"><%= option.content %></li>
+                        <% end %>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 class="text-sm font-medium text-gray-700 mb-2">Matches:</h4>
+                      <ul class="space-y-1">
+                        <% question.options.each do |option| %>
+                          <li class="text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded"><%= option.match_key %></li>
+                        <% end %>
+                      </ul>
+                    </div>
+                  </div>
+                <% else %>
+                  <ul class="space-y-2">
+                    <% question.options.each do |option| %>
+                      <li class="flex items-center gap-2 text-sm">
+                        <% if option.correct %>
+                          <svg class="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                          </svg>
+                        <% else %>
+                          <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 100-12 6 6 0 000 12z" clip-rule="evenodd" />
+                          </svg>
+                        <% end %>
+                        <span class="<%= option.correct ? 'text-green-700 font-medium' : 'text-gray-600' %>">
+                          <%= option.content %>
+                        </span>
+                      </li>
+                    <% end %>
+                  </ul>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-12 border-2 border-dashed border-gray-300 rounded-lg">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">No questions yet</h3>
+          <p class="mt-1 text-sm text-gray-500">Get started by adding your first question.</p>
+          <div class="mt-6">
+            <%= link_to "Add Question", new_admin_quiz_question_path(@quiz), class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
