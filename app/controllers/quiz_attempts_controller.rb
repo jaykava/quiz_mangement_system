@@ -3,7 +3,7 @@ class QuizAttemptsController < ApplicationController
 
   def question
     @current_question_index = params[:question_index].to_i || 0
-    @questions = @attempt.quiz.questions.includes(:options)
+    @questions = shuffled_questions_for_attempt
     @question = @questions[@current_question_index]
 
     if @question.nil?
@@ -14,7 +14,7 @@ class QuizAttemptsController < ApplicationController
   def answer
     @question = Question.find(params[:question_id])
     @current_question_index = params[:current_index].to_i
-    @questions = @attempt.quiz.questions.includes(:options)
+    @questions = shuffled_questions_for_attempt
 
     # Validate that an answer was provided
     answer_provided = false
@@ -93,5 +93,22 @@ class QuizAttemptsController < ApplicationController
 
   def set_attempt
     @attempt = QuizAttempt.find(params[:id])
+  end
+
+  # Get questions in shuffled order for current attempt
+  def shuffled_questions_for_attempt
+    question_ids = session["attempt_#{@attempt.id}_question_order"]
+
+    if question_ids.present?
+      # Fetch questions and sort them by the shuffled order
+      questions = @attempt.quiz.questions.includes(:options).index_by(&:id)
+      question_ids.map { |id| questions[id] }.compact
+    else
+      # Fallback: if no shuffled order exists, create one (for existing attempts)
+      shuffled_ids = @attempt.quiz.questions.pluck(:id).shuffle
+      session["attempt_#{@attempt.id}_question_order"] = shuffled_ids
+      questions = @attempt.quiz.questions.includes(:options).index_by(&:id)
+      shuffled_ids.map { |id| questions[id] }.compact
+    end
   end
 end

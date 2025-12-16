@@ -15,6 +15,10 @@ class QuizzesController < ApplicationController
       total_questions: @quiz.questions.count
     )
 
+    # Store shuffled question IDs for this attempt to ensure random order
+    shuffled_question_ids = @quiz.questions.pluck(:id).shuffle
+    session["attempt_#{@attempt.id}_question_order"] = shuffled_question_ids
+
     redirect_to question_quiz_attempt_path(@attempt)
   end
 end
