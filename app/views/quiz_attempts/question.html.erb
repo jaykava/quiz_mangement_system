@@ -1,9 +1,43 @@
-<div class="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50" data-controller="quiz-progress">
-  <!-- Progress Bar -->
+<% is_last_question = @current_question_index + 1 >= @questions.count %>
+<% timer_duration = @attempt.quiz.time_per_question || 10 %>
+
+<div class="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50" 
+     data-controller="quiz-progress question-timer"
+     data-question-timer-duration-value="<%= timer_duration %>"
+     data-question-timer-auto-submit-value="true"
+     data-question-timer-is-last-question-value="<%= is_last_question %>"
+     data-question-timer-question-id-value="<%= @question.id %>"
+     data-question-timer-attempt-id-value="<%= @attempt.id %>">
+  <!-- Progress Bar & Timer -->
   <div class="bg-white shadow-md sticky top-0 z-10">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
       <div class="flex justify-between items-center mb-2">
         <span class="text-sm font-medium text-gray-700">Question <%= @current_question_index + 1 %> of <%= @questions.count %></span>
+        
+        <!-- Timer Display -->
+        <div class="flex items-center gap-3">
+          <div class="relative w-14 h-14">
+            <svg class="w-14 h-14 transform -rotate-90" viewBox="0 0 100 100">
+              <circle class="text-gray-200" stroke-width="8" stroke="currentColor" fill="transparent" r="45" cx="50" cy="50"/>
+              <circle class="text-indigo-600 transition-all duration-1000 ease-linear"
+                      stroke-width="8" 
+                      stroke="currentColor" 
+                      fill="transparent" 
+                      r="45" 
+                      cx="50" 
+                      cy="50"
+                      stroke-dasharray="<%= 2 * Math::PI * 45 %>"
+                      stroke-dashoffset="0"
+                      stroke-linecap="round"
+                      data-question-timer-target="progressRing"/>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="text-lg font-bold text-gray-900" data-question-timer-target="secondsText"><%= timer_duration %></span>
+            </div>
+          </div>
+          <span class="text-sm font-medium text-gray-600">seconds</span>
+        </div>
+        
         <span class="text-sm font-medium text-indigo-600"><%= (((@current_question_index + 1).to_f / @questions.count) * 100).round %>% Complete</span>
       </div>
       <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
@@ -38,7 +72,7 @@
         
         <h2 class="text-2xl font-bold text-gray-900 mb-8"><%= @question.content %></h2>
         
-        <%= form_with url: answer_quiz_attempt_path(@attempt), method: :post, data: { controller: "quiz-form" } do |form| %>
+        <%= form_with url: answer_quiz_attempt_path(@attempt), method: :post, data: { controller: "quiz-form", question_timer_target: "form" } do |form| %>
           <%= form.hidden_field :question_id, value: @question.id %>
           <%= form.hidden_field :current_index, value: @current_question_index %>
           
@@ -121,5 +155,24 @@
   
   .animate-fade-in {
     animation: fade-in 0.5s ease-out;
+  }
+
+  /* Timer urgency animations */
+  @keyframes pulse-urgent {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+  }
+
+  .timer-urgent [data-question-timer-target="secondsText"] {
+    color: #ef4444;
+    animation: pulse-urgent 0.5s ease-in-out infinite;
+  }
+
+  .timer-urgent [data-question-timer-target="progressRing"] {
+    stroke: #ef4444 !important;
   }
 </style>

@@ -14,6 +14,10 @@
             <div class="text-3xl font-bold text-purple-600"><%= @quiz.total_points %></div>
             <div class="text-sm text-gray-500">Total Points</div>
           </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-orange-600"><%= @quiz.time_per_question || 10 %>s</div>
+            <div class="text-sm text-gray-500">Per Question</div>
+          </div>
         </div>
         
         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
@@ -24,6 +28,20 @@
             <li>• You cannot go back once you submit an answer</li>
             <li>• Your score will be shown at the end</li>
           </ul>
+        </div>
+        
+        <!-- Timer Warning -->
+        <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
+          <div class="flex items-center justify-center gap-2 text-orange-800">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="font-semibold">Timed Quiz!</span>
+          </div>
+          <p class="text-sm text-orange-700 mt-2">
+            You have <strong><%= @quiz.time_per_question || 10 %> seconds</strong> to answer each question. 
+            The quiz will automatically move to the next question when time runs out.
+          </p>
         </div>
         
         <%= button_to "Begin Quiz", question_quiz_attempt_path(@attempt), 

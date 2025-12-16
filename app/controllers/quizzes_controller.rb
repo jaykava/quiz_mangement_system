@@ -19,6 +19,6 @@ class QuizzesController < ApplicationController
     shuffled_question_ids = @quiz.questions.pluck(:id).shuffle
     session["attempt_#{@attempt.id}_question_order"] = shuffled_question_ids
 
-    redirect_to question_quiz_attempt_path(@attempt)
+    redirect_to start_quiz_attempt_path(@attempt)
   end
 end
