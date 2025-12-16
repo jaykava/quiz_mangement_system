@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   # Quiz attempts
   resources :quiz_attempts, only: [] do
     member do
+      get :start
       get :question
       post :answer
       get :results
